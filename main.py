@@ -15,11 +15,13 @@ with open('saida.txt', 'w') as saida:
     saida.truncate()
     for linha in linhas:
         inst = Instrucao(linha.strip()) # Removendo whitespaces com strip
-        saida.write(inst.binario() + '\n')
+        if(inst.binario()):
+            saida.write(inst.binario() + '\n')
 
 print('Montagem feita com sucesso! O arquivo binário está disponivel em saida.txt! \n')
+
 # EXEMPLOS:
-inst2 = Instrucao('addi $t0, $s0, 30')
-print(inst2.tipo())
-print(inst2.op())
-print(inst2.binario())
+# inst2 = Instrucao('addi $t0, $s0, 30')
+# print(inst2.tipo())
+# print(inst2.op())
+# print(inst2.binario())

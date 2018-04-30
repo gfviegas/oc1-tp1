@@ -1,6 +1,7 @@
 # Campos do Mips
 # TIPO R ->  OP(6 bits) - RS(5 bits) - RT(5 bits) - RD(5 bits) - SHAMT(5 bits) - FUNCT(6 bits)
 # TIPO I ->  OP(6 bits) - RS(5 bits) - RT(5 bits) - CONST(16 bits)
+# TIPO 'P' -> Pseudo instruções (viram instruções tipo R e tipo I)
 #
 # OP: Operação básica da instrução, tradicionalmente chamada de opcode
 # RS: Registrador do primeiro operando de origem
@@ -15,11 +16,17 @@
 #  'sub':  ['op', 'rd', 'rs', 'rt'],
 #  'and':  ['op', 'rd', 'rs', 'rt'],
 #  'or':   ['op', 'rd', 'rs', 'rt'],
+#  'ori':  ['op', 'rt', 'rs', 'const'],
 #  'nor':  ['op', 'rd', 'rs', 'rt'],
 #  'sll':  ['op', 'rd', 'rt', 'shamt'],
 #  'srl':  ['op', 'rd', 'rt', 'shamt'],
 #  'addi':  ['op', 'rt', 'rs', 'const'],
-#  'andi':  ['op', 'rt', 'rs', 'const']
+#  'andi':  ['op', 'rt', 'rs', 'const'],
+#
+#  PSEUDO INSTRUÇÕES
+#  'move' ['op', 'rd', 'rs'],
+#  'clear' ['op', 'rd']
+
 
 from registrador import binarioRegistrador
 
@@ -27,12 +34,18 @@ class Instrucao(object):
     def __init__(self, instrucao):
         self.comandos = instrucao.lower().replace(',', '').split()
 
+    def comands(self):
+        return ['add', 'sub', 'and', 'clear', 'or', 'ori', 'move', 'nor', 'addi', 'andi','sll', 'srl']
+
     def tipo(self):
         return {
             'add': 'r',
             'sub': 'r',
             'and': 'r',
+            'clear': 'p',
             'or': 'r',
+            'ori': 'i',
+            'move': 'p',
             'nor': 'r',
             'addi': 'i',
             'andi': 'i',
@@ -41,12 +54,13 @@ class Instrucao(object):
         }[self.comandos[0]]
 
     def op(self):
-        if (self.tipo() == 'r'):
+        if (self.tipo() == 'r' or self.tipo() == 'p'):
             return 0    # '000000'
 
         return {
             'addi': 8,  # '001000'
-            'andi': 12  # '001100'
+            'andi': 12,  # '001100'
+            'ori':  13 # '001101'            
         }[self.comandos[0]]
 
     def funct(self):
@@ -60,7 +74,26 @@ class Instrucao(object):
             'srl':  2   # '000010'
         }[self.comandos[0]]
 
+    def pseudo(self):
+        return {
+            'move': 'add',
+            'clear': 'add'
+        }[self.comandos[0]]
+
     def binario(self):
+
+        # confere se comando existe
+        if(not self.comandos[0] in self.comands()):
+            print("Comando '"+ self.comandos[0] +"' não encontrado")
+            return 0
+
+        # verifica se é uma das pseudo instruções e completa parâmetros
+        if(self.tipo() == 'p'):
+            if(self.comandos[0] == 'clear'):
+                self.comandos.append('$zero')
+            self.comandos[0] = self.pseudo()
+            self.comandos.append('$zero')
+
         op = '{0:06b}'.format(self.op())
 
         # O rs é o terceiro nos comandos a seguir, e no SLL, SRL, ele é zero sempre
@@ -77,7 +110,7 @@ class Instrucao(object):
         else:
             rt = '{0:05b}'.format(binarioRegistrador(self.comandos[1])) # E o segundo nos do tipo I
 
-        if (self.tipo() == 'r'):
+        if (self.tipo() == 'r' or self.tipo() == 'p'):
             # O rd é sempre o segundo, no tipo R
             rd = '{0:05b}'.format(binarioRegistrador(self.comandos[1]))
 
