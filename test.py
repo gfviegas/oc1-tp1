@@ -1,6 +1,6 @@
 import unittest
 
-from main import processarEntrada
+from main import proccessAssemblyFile
 from binary import toBin
 from register import registerValue
 from instruction import instruction
@@ -68,7 +68,7 @@ class MainTest(unittest.TestCase):
         self.assertEqual(self.randomInst2.binary(), '00100001010010111111111100001101')
 
     def test_main(self):
-        processarEntrada('tests/input.asm', 'tests/generatedOutput.txt')
+        proccessAssemblyFile('tests/input.asm', 'tests/generatedOutput.txt')
         with open('tests/generatedOutput.txt') as generatedOutput:
             generatedOutputLines = generatedOutput.readlines()
         with open('tests/expectedOutput.txt') as expectedOutput:

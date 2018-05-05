@@ -6,7 +6,7 @@ def printHeader():
     print('*  por: Bruno Marra (3029), Gustavo Viegas (3026)  *')
     print('****************************************************')
 
-def processarEntrada(inputFile, outputFile):
+def proccessAssemblyFile(inputFile, outputFile):
     print('Lendo arquivo de entrada...')
 
     with open(inputFile) as input:
@@ -25,7 +25,7 @@ def processarEntrada(inputFile, outputFile):
 
 if __name__ == "__main__":
     printHeader()
-    processarEntrada('input.asm', 'output.txt')
+    proccessAssemblyFile('input.asm', 'output.txt')
 
     # EXEMPLOS:
     # inst2 = instruction('add $s1, $s2, $s3')
