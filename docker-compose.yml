@@ -5,9 +5,13 @@ services:
     image: python:3
     container_name: oc1-tp1-runner
     working_dir: /var/www/app
-    command: bash
-    # command: bash -c 'python main.py'
+    command: bash -c 'python main.py'
     volumes:
       - ./:/var/www/app
-    ports:
-      - 3000:3000
+  test:
+    image: python:3
+    container_name: oc1-tp1-runner
+    working_dir: /var/www/app
+    command: bash -c 'python test.py'
+    volumes:
+      - ./:/var/www/app
